@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load thumbnail %}
+
+{% block title %}{{ block.super }}Profilim{% endblock %}
+
+{% block container %}
+
+<div class="container profile-head">
+  <div class="row">
+    <div class="col-sm-10">
+      <h1>{{ show_user.get_full_name }}</h1>
+      {% if editable %}
+      <a href="{% url 'profiles:edit_self' %}" class="btn btn-info">Profili Düzenle</a>
+      {% endif %}
+    </div>
+    <div class="col-sm-2"><img title="profile picture" class="img-circle img-responsive" src="{% thumbnail show_user.profile.picture|default:'default_profile.png' 140x140 crop %}">
+    </div>
+  </div>
+</div>
+
+<div class="container profile-body">
+  <div class="row">
+    <div class="col-sm-4">
+      <ul class="list-group">
+        <li class="list-group-item text-muted">Profil</li>
+        <li class="list-group-item text-right"><span class="pull-left"><strong>E-posta:</strong></span> {{ show_user.email|default:"missing" }}
+	  {% if show_user.profile.email_verified %}
+	    <span class="glyphicon glyphicon-ok-circle" aria-hidden="true" title="Bu e-posta adresi doğrulanmış"></span>
+	    <span class="sr-only">Onaylanmış</span>
+	  {% else %}
+	    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true" title="Bu e-posta adresi doğrulanmış"></span>
+	    <span class="sr-only">Onaylanmamış</span>
+	  {% endif %}
+	</li>
+        <li class="list-group-item text-right"><span class="pull-left"><strong>Üyelik Tarihi:</strong></span> {{ show_user.date_joined }}</li>
+        <li class="list-group-item text-right"><span class="pull-left"><strong>Son Giriş:</strong></span> {{ show_user.last_login }}</li>
+      </ul>
+    </div>
+    <div class="col-sm-8">
+      <div class="panel panel-default">
+        <div class="panel-heading">{{ show_user.get_full_name }} Profili
+	  <a href="{% url 'profiles:show' show_user.profile.slug %}">
+	    <span class="glyphicon glyphicon-link" aria-hidden="true" title="Profile permalink"></span>
+	    <span class="sr-only">Permalink</span></a> {{ show_user.profile.get_absolute_url }}
+	</div>
+        <div class="panel-body">
+	  <!-- <strong>Bio</strong>: {{ show_user.profile.bio }}<br> -->
+  
+    {% if parent_profile %}  
+    <!-- Parent Profile buraya parent profile a ait dataları yaz. <br> -->
+    <strong>Ebeveyn Tanıtıcı Bilgi</strong>: {{ parent_profile.long_bio }}
+    {% endif %}<br>
+
+    {% if babysitter_profile %} 
+    <!-- Babysitter Profile buraya babysitter profile a ait dataları yaz.<br> -->
+    <strong>Bakıcı Tanıtıcı Bilgi </strong>: {{ babysitter_profile.long_bio }}
+    <hr>
+    <strong>İkametgah Belgesi </strong>:  <a href="{% static babysitter_profile.ikametgah.url %}">İkametgah Belgesi</a>
+    <hr>
+    <strong>Sabıka Kaydı Belgesi </strong>: {{ babysitter_profile.sabika_kaydi }}
+    <hr>
+    <strong>Öğrenci Belgesi </strong>: {{ babysitter_profile.ogrenci_belgesi }}
+    <hr>
+
+    {% endif %}<br>
+
+	     </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
