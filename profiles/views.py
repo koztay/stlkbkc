@@ -2,9 +2,36 @@ from __future__ import unicode_literals
 from django.views import generic
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from braces.views import LoginRequiredMixin
 from . import forms
 from . import models
+from . models import ParentProfile, BabySitterProfile
+from comments.models import Comment 
+
+User = get_user_model()
+
+class ShowParentProfileList(LoginRequiredMixin, generic.ListView):
+    model = ParentProfile
+    queryset = ParentProfile.objects.all()
+    template_name = "profiles/show_all_profiles.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ShowParentProfileList, self).get_context_data(*args, **kwargs)
+        # all_comments = Comment.objects.all()
+        # context['comments'] = all_comments
+        users_with_comments = []
+        for parentprofile in ParentProfile.objects.all():
+            #print parentprofile.user
+            comments = parentprofile.get_users_comments()
+            user_dict = {'profile':parentprofile, 'comments':comments}
+            users_with_comments.append(user_dict)
+            print comments
+
+        # print kwargs
+        context['users_with_comments'] = users_with_comments
+        print context
+        return context
 
 
 class ShowProfile(LoginRequiredMixin, generic.TemplateView):
@@ -31,18 +58,23 @@ class ShowProfile(LoginRequiredMixin, generic.TemplateView):
 
         try:
             parent_profile = user.parentprofile
+            print "%s, %s" %('comments are:', parent_profile.get_users_comments())
             kwargs["parent_profile"] = parent_profile
         except:
             pass
 
         try:
             babysitter_profile = user.babysitterprofile
+            print "%s, %s" %('comments are:',babysitter_profile.get_users_comments())
             kwargs["babysitter_profile"] = babysitter_profile
         except:
             pass
 
-        print "%s, %s" %("args are : ", args) 
-        print "%s, %s" %("kwargs are : ", kwargs) 
+
+        #print "%s, %s" %('comments are:', parent_profile.get_users_comments())
+        #print "%s, %s" %('comments are:',babysitter_profile.get_users_comments(user))
+        # print "%s, %s" %("args are : ", args) 
+        # print "%s, %s" %("kwargs are : ", kwargs) 
         return super(ShowProfile, self).get(request, *args, **kwargs)
 
 

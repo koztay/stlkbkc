@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load thumbnail %}
+
+{% block title %} Profil Listesi {% endblock %}
+
+{% block container %}
+<div class="container profile-head">
+  <div class="row">
+    
+  </div>
+</div>
+
+<div class="container profile-body">
+	<div class="row"> 
+
+	 {% for comment in comments %}
+	           
+	 <h3>{{ comment }} : </h3> {{comment.comment_text}} <hr>
+	            
+	 {% endfor %}
+
+	</div>
+</div>
+
+
+
+{% endblock %}

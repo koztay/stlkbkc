@@ -4,6 +4,7 @@ from django.utils.encoding import python_2_unicode_compatible
 import uuid
 from django.db import models
 from django.conf import settings
+from comments.models import Comment
 
 
 class BaseProfile(models.Model):
@@ -22,12 +23,24 @@ class BaseProfile(models.Model):
     class Meta:
         abstract = True
 
+    def get_users_comments(self):
+        comments =  Comment.objects.filter(commented_user=self.user)
+        # print comments
+        # print "does it worked?"
+        return comments
+
+
+
 
 def get_upload_path(instance, filename):
     name, ext = filename.split('.')
     file_path = 'bakici-belgeleri/{username}/{name}.{ext}'.format(
         username=instance.user.name , name=name, ext=ext) 
     return file_path
+
+
+
+
 
 @python_2_unicode_compatible
 class Profile(BaseProfile):
